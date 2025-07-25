@@ -1,0 +1,102 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <sstream>
+
+using namespace std;
+class Employee {
+private:
+	int id;
+	string firstName, lastName;
+	double salary;
+public:
+	Employee() : id(), firstName(""), lastName(""), salary() {}
+	Employee(int i, string fN, string lN, double s) : id(i), firstName(fN), lastName(lN), salary(s) {}
+	Employee(const Employee &p) : id(p.id), firstName(p.firstName), lastName(p.lastName), salary(p.salary) {}
+	~Employee() {} 
+	int getID() const { return id; }
+	string getFirstName() const { return firstName; }
+	string getLastName() const { return lastName; }
+	double getSalary() const { return salary; }
+	string getName() const { return firstName + " " + lastName; }
+	void setSalary(double s) { salary = s; }
+	double getAnnualSalary() const { return 12 * salary; }
+	double raiseSalary(double percent) { return salary * (percent/100.0); }
+	string toString() const {
+		ostringstream oss;
+		oss << "Employee[id=" << id << ",name=" << getName() << ",salary=$" << fixed << setprecision(2) << salary << "]";
+		return oss.str();
+	}
+	friend istream& operator >> (istream& in, Employee& p) {
+		in >> p.id;
+		in.ignore();
+		getline(in, p.firstName);
+		getline(in, p.lastName);
+		in >> p.salary;
+		return in;
+	}
+	friend ostream& operator << (ostream& out, const Employee& p) {
+		out << "Employee[id=" << p.id << ",name=" << p.getName() << ",salary=$" << fixed << setprecision(2) << p.salary << "]" << endl;
+		return out;
+	}
+	Employee& operator ++() {
+		raiseSalary(10);
+		return *this;
+	}
+	Employee operator ++(int) {
+		Employee temp = *this;
+		raiseSalary(10);
+		return temp;
+	}
+	Employee& operator --() {
+		raiseSalary(-10);
+		return *this;
+	}
+	Employee operator --(int) {
+		Employee temp = *this;
+		raiseSalary(-10);
+		return temp;
+	}
+	Employee operator + (double s) const {
+		Employee temp = *this;
+		temp.salary += s;
+		return temp;
+	}
+	Employee operator - (double s) const {
+		Employee temp = *this;
+		temp.salary -= s;
+		return temp;
+	}
+	bool operator == (const Employee& p) const{
+		return getAnnualSalary() == p.getAnnualSalary();
+	}
+	bool operator != (const Employee& p) const {
+		return !(*this == p);
+	}
+	bool operator>(const Employee& other) const {
+		return getAnnualSalary() > other.getAnnualSalary();
+	}
+
+	bool operator<(const Employee& other) const {
+		return getAnnualSalary() < other.getAnnualSalary();
+	}
+};
+int main() {
+	Employee e1, e2;
+	cin >> e1 >> e2;
+	double a, b;
+	cin >> a >> b;
+	cout << e1 << e2;
+	if (e1 == e2)
+		cout << "BANG NHAU" << endl;
+	else if (e1 > e2)
+		cout << "LON HON" << endl;
+	else
+		cout << "NHO HON" << endl;
+
+	e1++;
+	e1 = e1++ - a;
+	e2 = --e2 + b;
+	cout << "$" << fixed << setprecision(2) << e1.getSalary() << endl;
+	cout << "$" << fixed << setprecision(2) << e2.getSalary() << endl;
+}
